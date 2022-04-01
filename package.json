@@ -1,6 +1,5 @@
 {
   "name": "LLDAPI",
-  "homepage": ".",
   "scripts": {
     "start": "yarn node index"
   },
