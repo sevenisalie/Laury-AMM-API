@@ -39,6 +39,9 @@ const authenticateRoute = require("./routes/authenticate")
 app.use("/authenticate", authenticateRoute)
 
 
+const tokenRouter = require("./routes/equityRouter")
+app.use("/routerInfo", tokenRouter)
+
 
 
 
@@ -47,7 +50,7 @@ app.use("/authenticate", authenticateRoute)
 //run it
 const port = 8090 //for local
 
-const PORT = process.env.PORT || 3000 //for prod
+const PORT = process.env.PORT || 8090 //for prod
 
 
 app.listen(
@@ -55,8 +58,3 @@ app.listen(
     () => console.log(`SERVER RUNNING ON PORT ${PORT}`)
 )
 
-// const task = cron.schedule('*/5 * * * *', async () => {
-//   writeAllPoolData()
-//   console.log("ran task")
-// });
-// task.start()

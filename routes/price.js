@@ -50,9 +50,9 @@ const mapPriceData = async (priceData) => {
 
 //actual route/api endpoint
 
-router.get("/:id", async (req, res) => {
+router.get("/:symbol", async (req, res) => {
 
-    let symbol = req.params.id
+    let symbol = req.params.symbol
     symbol = symbol.toUpperCase()
     try {
         

@@ -1,9 +1,86 @@
 const generateApiKey = require('generate-api-key');
 const express = require("express")
 const router = express.Router()
-
+const bcrypt = require("bcrypt")
+const {createUser, getUser} = require("../models/User")
 
 const apiKey = generateApiKey()
+const users = []
+
+const usernameExists = async (_username) => {
+    const user = await getUser(_username)
+    if (user === undefined) {
+        return false
+    } else {
+        return true
+    }
+
+}
+
+const findUser = (_username) => {
+    const results = users.filter((user) => {
+        return user.username.toLowerCase() === _username.toLowerCase()
+    })
+    return results[0]
+
+    // if (results.length > 0) {
+    //     return results[0]
+    // } else {
+    //     return []
+    // }
+}
+
+router.post("/createUser", async (req, res) => {
+    if (usernameExists(req.body.username)) {
+        return res.status(500).send("User exists")
+    }
+    try {
+
+        if (req.body.username !== "" && req.body.password !== "") {
+
+    
+          
+                const _apikey = generateApiKey()
+                const hashed = await bcrypt.hash(req.body.password, 10)
+                const hashedkey = await bcrypt.hash(_apikey, 10)
+                const user = {username: req.body.username, password: hashed, apikey: hashedkey}
+                users.push(user)
+                await createUser(user)
+                res.status(201).send(user)
+    
+ 
+        } else {
+            res.status(500).send("seomthing bad happened")
+        }
+    } catch (err) {
+        console.log(err)
+    }
+
+    
+
+})
+
+router.post("/login", async (req, res) => {
+    try {
+        const user = await getUser(req.body.username)
+        console.log(user)
+        console.log(await usernameExists(req.body.username))
+
+
+        if (user !== undefined) {
+            const auth = await bcrypt.compare(req.body.password, user.password)
+            if (auth === true) {
+                res.status(201).send(`Logged in ${user.username}`)
+            } 
+        } else {
+            res.status(500).send("Couldn't find user")
+        } 
+    } catch (err) {
+        console.log(err)
+        res.status(500).send("Couldnt Login")
+    }
+
+})
 
 
 
