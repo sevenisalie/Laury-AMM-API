@@ -4,7 +4,7 @@ GET http://localhost:8090/price/matic
 GET http://localhost:8090/
 
 ###
-GET http://localhost:8090/routerInfo/?tokenA=0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270&tokenB=0x2791bca1f2de4661ed88a30c99a7a9449aa84174&amount=100
+GET http://localhost:8090/routerInfo/?tokenA=0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270&tokenB=0x2791bca1f2de4661ed88a30c99a7a9449aa84174&amount=100&key=PAMdGzKWp1e/9skFRz..nc4geF.
 
 ###
 
@@ -17,7 +17,7 @@ POST http://localhost:8090/authenticate/createUser
 Content-Type: application/json
 
 {
-    "username": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+    "username": "0xAEFac7De344509cc05fB806898E18C8B8bD0024c",
     "password": "poopballs"
 }
 ###
@@ -26,7 +26,7 @@ POST http://localhost:8090/authenticate/login
 Content-Type: application/json
 
 {
-    "username": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+    "username": "0xAEFac7De344509cc05fB806898E18C8B8bD0024c",
     "password": "poopballs"
 }
 

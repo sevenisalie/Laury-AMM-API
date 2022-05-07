@@ -9,7 +9,7 @@ const users = []
 
 const usernameExists = async (_username) => {
     const user = await getUser(_username)
-    if (user === undefined) {
+    if (user === null) {
         return false
     } else {
         return true
@@ -18,7 +18,7 @@ const usernameExists = async (_username) => {
 
 const verifyUserKey = async (_apiKey) => {
     const user = await getUserByKey(_apiKey)
-    if (user === undefined) {
+    if (user === null) {
         return false
     } else {
         return true
@@ -38,27 +38,37 @@ const findUser = (_username) => {
 }
 
 router.post("/createUser", async (req, res) => {
-    if (usernameExists(req.body.username)) {
-        return res.status(500).send("User exists")
-    }
-    try {
+    const userExists = await usernameExists(req.body.username)
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
 
-        if (req.body.username !== "" && req.body.password !== "") {
+    if (userExists) {
+        return res.status(500).json({
+            message: "User Exists"
+           })
+    } else {
+        try {
 
-                const _apikey = generateApiKey()
-                const hashed = await bcrypt.hash(req.body.password, 10)
-                const user = {username: req.body.username, password: hashed, apikey: _apikey}
-                users.push(user)
-                await createUser(user)
-                res.status(201).send(user)
+            if (req.body.username !== "" && req.body.password !== "") {
     
- 
-        } else {
-            res.status(500).send("seomthing bad happened")
+                    const _apikey = generateApiKey()
+                    const hashed = await bcrypt.hash(req.body.password, 10)
+                    const _user = {username: req.body.username, password: hashed, apikey: _apikey}
+                    await createUser(_user)
+                    res.status(201).json({
+                        message: _user
+                    })
+        
+     
+            } else {
+                res.status(500).json({
+                    message: "error"
+                   })            }
+        } catch (err) {
+            console.log(err)
         }
-    } catch (err) {
-        console.log(err)
     }
+    
 
     
 
@@ -66,6 +76,9 @@ router.post("/createUser", async (req, res) => {
 
 router.post("/login", async (req, res) => {
     try {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "X-Requested-With");
+
         const user = await getUser(req.body.username)
         console.log(user)
         console.log(await usernameExists(req.body.username))
@@ -74,14 +87,20 @@ router.post("/login", async (req, res) => {
         if (user !== undefined) {
             const auth = await bcrypt.compare(req.body.password, user.password)
             if (auth === true) {
-                res.status(201).send(`Logged in ${user.username}`)
+                res.status(201).json({
+                    message:`Logged in ${user.username}`
+                    })
             } 
         } else {
-            res.status(500).send("Couldn't find user")
+            res.status(500).json({
+                message: "Couldn't find User"
+               })
         } 
     } catch (err) {
         console.log(err)
-        res.status(500).send("Couldnt Login")
+        res.status(500).json({
+            message: "Couldn't login"
+           })
     }
 
 })
@@ -109,6 +128,7 @@ router.get("/", async (req, res) => {
     }
 })
 
-module.exports = [
-    router
-]
+module.exports = {
+    authRouter: router,
+    verifyKey: verifyUserKey
+}

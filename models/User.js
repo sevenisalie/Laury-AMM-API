@@ -39,8 +39,13 @@ const createUser = async (data) => {
 }
 
 const getUser = async (_username) => {
-    const user = Users.findOne({ username: _username});
+    const user = await Users.findOne({ username: _username});
+    console.log("LOOK HERE")
+
+    console.log(user)
+    console.log("STOP LOOKING HERE")
       return user
+      //returns null if no user found
 }
 
 const getUserByKey = async (_apiKey) => {

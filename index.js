@@ -35,8 +35,8 @@ app.use('/price', priceOracleRoute)
 const equityRouterRoute = require("./routes/equityRouter")
 app.use("/router", equityRouterRoute)
 
-const authenticateRoute = require("./routes/authenticate")
-app.use("/authenticate", authenticateRoute)
+const {authRouter} = require("./routes/authenticate")
+app.use("/authenticate", authRouter)
 
 
 const tokenRouter = require("./routes/equityRouter")

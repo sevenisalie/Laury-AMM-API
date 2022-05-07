@@ -11,6 +11,7 @@ const TOKENS = TOKENLIST["tokens"]
 const ADDRESSES = require("../utils/build/deployments/map.json")
 const RESOLVER = require("../utils/build/contracts/Resolver.json")
 const {ROUTERS} = require("../utils/routers")
+const {verifyKey} = require("../routes/authenticate")
 
 
 
@@ -115,28 +116,36 @@ const fetchRouterInfo = async (tokenA, tokenB, amountIn) => {
 
 }
 
-fetchRouterInfo(
-    "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
-    "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
-    "1"
-)
+
 
 
 router.get("/", async (req, res) => {
+    const auth = await verifyKey(req.query.key)
     const tokenA = req.query.tokenA
     const tokenB = req.query.tokenB
     const amount = req.query.amount
 
-    try {
-        const data = await fetchRouterInfo(
-            tokenA,
-            tokenB,
-            amount
-        )
-        res.header("Access-Control-Allow-Origin", "*");
-        res.header("Access-Control-Allow-Headers", "X-Requested-With");
-        res.json(data)
-    } catch (err) {console.log(err)}
+    if (auth) {
+        try {
+            const data = await fetchRouterInfo(
+                tokenA,
+                tokenB,
+                amount
+            )
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Access-Control-Allow-Headers", "X-Requested-With");
+            res.json(data)
+            res.status(201).json(data)
+
+        } catch (err) {console.log(err)}
+    } else {
+        res.status(500).json({
+             message: "API KEY NO GOOD HERE"
+            })
+
+    }
+
+    
 })
 
 module.exports = [
