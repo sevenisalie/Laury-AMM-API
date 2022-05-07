@@ -2,7 +2,7 @@ const generateApiKey = require('generate-api-key');
 const express = require("express")
 const router = express.Router()
 const bcrypt = require("bcrypt")
-const {createUser, getUser} = require("../models/User")
+const {createUser, getUser, getUserByKey} = require("../models/User")
 
 const apiKey = generateApiKey()
 const users = []
@@ -14,20 +14,27 @@ const usernameExists = async (_username) => {
     } else {
         return true
     }
+}
 
+const verifyUserKey = async (_apiKey) => {
+    const user = await getUserByKey(_apiKey)
+    if (user === undefined) {
+        return false
+    } else {
+        return true
+    }
 }
 
 const findUser = (_username) => {
     const results = users.filter((user) => {
         return user.username.toLowerCase() === _username.toLowerCase()
     })
-    return results[0]
 
-    // if (results.length > 0) {
-    //     return results[0]
-    // } else {
-    //     return []
-    // }
+    if (results.length > 0) {
+        return results[0]
+    } else {
+        return []
+    }
 }
 
 router.post("/createUser", async (req, res) => {
@@ -38,12 +45,9 @@ router.post("/createUser", async (req, res) => {
 
         if (req.body.username !== "" && req.body.password !== "") {
 
-    
-          
                 const _apikey = generateApiKey()
                 const hashed = await bcrypt.hash(req.body.password, 10)
-                const hashedkey = await bcrypt.hash(_apikey, 10)
-                const user = {username: req.body.username, password: hashed, apikey: hashedkey}
+                const user = {username: req.body.username, password: hashed, apikey: _apikey}
                 users.push(user)
                 await createUser(user)
                 res.status(201).send(user)

@@ -43,7 +43,16 @@ const getUser = async (_username) => {
       return user
 }
 
+const getUserByKey = async (_apiKey) => {
+    const user = Users.findOne({
+        apikey: _apiKey
+    })
+    return user
+}
+
+
 module.exports = {
     createUser,
-    getUser
+    getUser,
+    getUserByKey
 }
